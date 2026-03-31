@@ -1,3 +1,54 @@
 tvecs1024
 tvecs512
 tvecs768
+
+# Build directories
+obj_dir/
+build/
+out/
+
+# Verilator generated files
+*.vcd
+*.fst
+*.vpd
+*.dump
+
+# Verilator intermediate/generated C++ files
+*.o
+*.d
+*.a
+*.so
+
+# Executables
+*.exe
+*.out
+sim*
+V*
+verilator_bin*
+
+# Logs
+*.log
+
+# Coverage / debug
+*.gcda
+*.gcno
+*.gcov
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
+
+# Editor/IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python (if using cocotb or scripts)
+__pycache__/
+*.pyc
