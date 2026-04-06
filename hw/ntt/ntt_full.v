@@ -5,8 +5,8 @@ module ntt_full (
     input  start,
     output done,
     input  [7:0] ext_addr,
-    output signed [31:0] ext_data_out,
-    input  signed [31:0] ext_data_in,
+    output signed [15:0] ext_data_out,
+    input  signed [15:0] ext_data_in,
     input  ext_we,
     
     // Instrumentation outputs from controller
@@ -14,7 +14,7 @@ module ntt_full (
     output [2:0] len_exp_out,
     output [7:0] start_idx_out,
     output [7:0] j_idx_out,
-    output [8:0] k_out,
+    output [6:0] k_out,
     
     // Debug outputs
     output [7:0] write_addr_out,
@@ -28,21 +28,21 @@ module ntt_full (
 );
 
 
-    wire [8:0] k;
+    wire [6:0] k;
     wire [7:0] j, j_plus_len;
     wire bfu_valid, write_en, write_b_en;
-    wire signed [31:0] ram_out_a, ram_out_b;
-    wire signed [31:0] bfu_a_out, bfu_b_out;
-    wire signed [31:0] zeta_data;
+    wire signed [15:0] ram_out_a, ram_out_b;
+    wire signed [15:0] bfu_a_out, bfu_b_out;
+    wire signed [15:0] zeta_data;
     
     // Register BFU outputs only (not addresses!)
-    reg signed [31:0] bfu_a_out_reg, bfu_b_out_reg;
+    reg signed [15:0] bfu_a_out_reg, bfu_b_out_reg;
     
     // Capture BFU outputs during COMPUTE
     always @(posedge clk) begin
         if (rst) begin
-            bfu_a_out_reg <= 32'd0;
-            bfu_b_out_reg <= 32'd0;
+            bfu_a_out_reg <= 16'd0;
+            bfu_b_out_reg <= 16'd0;
         end else if (bfu_valid) begin
             bfu_a_out_reg <= bfu_a_out;
             bfu_b_out_reg <= bfu_b_out;
@@ -57,7 +57,7 @@ module ntt_full (
     // Write addresses: use controller values directly too
     wire [7:0] write_addr = ext_we ? ext_addr : (write_b_en ? j_plus_len : j);
     wire we = ext_we | write_en | write_b_en;
-    wire signed [31:0] write_data = ext_we ? ext_data_in : (write_b_en ? bfu_b_out_reg : bfu_a_out_reg);
+    wire signed [15:0] write_data = ext_we ? ext_data_in : (write_b_en ? bfu_b_out_reg : bfu_a_out_reg);
     
     // Zeta ROM
     zetas_rom zeta_rom_inst (

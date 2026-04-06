@@ -6,7 +6,7 @@ module ntt_controller (
     input  start,
     output reg done,
     
-    output reg [8:0] k,
+    output reg [6:0] k,
     output reg [7:0] j,
     output reg [7:0] j_plus_len,
     output reg bfu_valid,
@@ -18,7 +18,7 @@ module ntt_controller (
     output reg [2:0] len_exp_out,
     output reg [7:0] start_idx_out,
     output reg [7:0] j_idx_out,
-    output reg [8:0] k_out
+    output reg [6:0] k_out
 );
 
     localparam IDLE = 3'd0;
@@ -31,7 +31,7 @@ module ntt_controller (
     reg [2:0] len_exp;
     reg [7:0] start_idx;
     reg [7:0] j_idx;
-    reg [8:0] k_idx;
+    reg [6:0] k_idx;
     
     wire [7:0] len_val = 8'd128 >> len_exp;
 
@@ -41,8 +41,8 @@ module ntt_controller (
             len_exp <= 3'd0;
             start_idx <= 8'd0;
             j_idx <= 8'd0;
-            k_idx <= 9'd1;
-            k <= 9'd1;
+            k_idx <= 7'd1;
+            k <= 7'd1;
             j <= 8'd0;
             j_plus_len <= 8'd128;
             bfu_valid <= 1'b0;
@@ -72,7 +72,7 @@ module ntt_controller (
                         len_exp <= 3'd0;
                         start_idx <= 8'd0;
                         j_idx <= 8'd0;
-                        k_idx <= 9'd1;
+                        k_idx <= 7'd1;
                     end
                 end
 
