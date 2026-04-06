@@ -4,7 +4,7 @@ CFLAGS += -Wall -Wextra -Wpedantic -Wmissing-prototypes -Wredundant-decls \
 NISTFLAGS += -Wno-unused-result -O3 -fomit-frame-pointer
 RM = /bin/rm
 
-SOURCES = kem.c indcpa.c polyvec.c poly.c ntt.c cbd.c reduce.c verify.c
+SOURCES = kem.c indcpa.c polyvec.c poly.c ntt.c cbd.c reduce.c verify.c 
 SOURCESKECCAK = $(SOURCES) fips202.c symmetric-shake.c
 HEADERS = params.h kem.h indcpa.h polyvec.h poly.h ntt.h cbd.h reduce.c verify.h symmetric.h
 HEADERSKECCAK = $(HEADERS) fips202.h
@@ -134,6 +134,17 @@ ntt: obj_dir/V$(TOP)
 		
 ntt_run: ntt 
 
+obj_dir/Vntt_bfu: $(RTL_SRCS) $(SOURCESKECCAK)
+	$(VERILATOR) --cc $(RTL_SRCS) \
+		--exe $(SOURCESKECCAK) test/tb_ntt_bfu.cpp randombytes.c \
+		--top-module ntt_bfu \
+		-CFLAGS "$(INCLUDES)" \
+		-LDFLAGS "-lm"
+
+bfu: obj_dir/Vntt_bfu
+	make -C ./obj_dir -f Vntt_bfu.mk
+
+bfu_run: bfu
 # ######################################################################
 # Dilithium hardware build (NTT)
 # ######################################################################
