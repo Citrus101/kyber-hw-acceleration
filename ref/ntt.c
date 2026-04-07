@@ -94,6 +94,17 @@ void ntt(int16_t r[256]) {
   }
 }
 
+void bfu(int16_t a, int16_t b, int16_t zeta, int16_t *a_o, int16_t *b_o) {
+  int16_t t = fqmul(zeta, b);
+  *a_o = a + t;
+  *b_o = a - t;
+  *a_o %= 3329;
+  *b_o %= 3329;
+  *a_o += 3329 * (*a_o < 0);
+  *b_o += 3329 * (*b_o < 0);
+
+}
+
 /*************************************************
 * Name:        invntt_tomont
 *

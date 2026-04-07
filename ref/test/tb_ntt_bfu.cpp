@@ -1,6 +1,7 @@
 #include <verilated.h>
 #include "Vntt_bfu.h"
 #include <iostream>
+#include "ntt.h"
 #include <cstdlib>
 #include <cstdint>
 
@@ -52,35 +53,50 @@ int main(int argc, char** argv) {
     // -----------------------------
     int16_t test_a[]   = {100, -200, 1234, -4096, 0, 3328};
     int16_t test_b[]   = {50,  300,  -123, 2048, -1, 1};
-    int16_t test_zeta[] = {3, -5, 17, -33, 3328, -3329};
+    // int16_t test_zeta[] = {3, -5, 17, -33, 3328, -3329};
+    int16_t test_zeta[] = {1, 1, 1, 1, 1, 1};
 
     int num_tests = 6;
 
-    for (int i = 0; i < num_tests; i++) {
-        top->a = test_a[i];
-        top->b = test_b[i];
-        top->zeta = test_zeta[i];
+    int i;
+    int j;
+    int count = 5;
+    for (i = (-1) * ((1 << 15) - 1); i < ((1 << 15)); i++) {
+        for (j = (-1) * ((1 << 15) - 1); j < ((1 << 15)); j++) {
 
-        top->eval();
+            top->a = i;
+            top->b = j;
+            top->zeta = 1;
 
-        int16_t ref_a, ref_b;
-        golden_bfu(test_a[i], test_b[i], test_zeta[i], ref_a, ref_b);
+            top->eval();
 
-        std::cout << "Test " << i << ": ";
+            int16_t ref_a, ref_b;
+            // golden_bfu(test_a[i], test_b[i], test_zeta[i]);
+            bfu(i, j, top->zeta, &ref_a, &ref_b);
 
-        if (top->a_out != ref_a || top->b_out != ref_b) {
-            std::cout << "FAIL\n";
-            errors++;
-        } else {
-            std::cout << "PASS\n";
+            if (top->a_out != ref_a || top->b_out != ref_b) {
+
+                printf("FAIL ❌\n");
+                errors++;
+
+                printf("  Inputs : a=%d b=%d zeta=%d\n",
+                    i,
+                    j,
+                    top->zeta);
+
+                printf("  DUT    : a_out=%d b_out=%d\n",
+                    (int)top->a_out,
+                    (int)top->b_out);
+
+                printf("  REF    : a_out=%d b_out=%d\n",
+                    ref_a,
+                    ref_b);
+                count--;
+            } 
+            if(count == 0) break;
+
         }
-        std::cout << "  Inputs : a=" << test_a[i]
-                    << " b=" << test_b[i]
-                    << " zeta=" << test_zeta[i] << "\n";
-        std::cout << "  DUT    : a_out=" << top->a_out
-                    << " b_out=" << top->b_out << "\n";
-        std::cout << "  REF    : a_out=" << ref_a
-                    << " b_out=" << ref_b << "\n";
+        if(count == 0) break;
     }
 
     // -----------------------------
@@ -91,6 +107,7 @@ int main(int argc, char** argv) {
     } else {
         std::cout << "\n❌ ERRORS: " << errors << "\n";
     }
+    std::cout << i << " " << j << "\n";
 
     delete top;
     return errors;

@@ -9,44 +9,52 @@ module ntt_bfu (
 );
 
     // Parameters
-    localparam signed [15:0] Q    = 16'd3329;   // Modulus
-    localparam signed [31:0] Q_32 = 32'sd3329;  // Extended modulus for 32-bit operations
+    localparam signed [15:0] Q_16    = 16'd3329;   // Modulus
     localparam signed [16:0] Q_17 = 17'sd3329;  // Extended modulus for 32-bit operations
+    localparam signed [31:0] Q_32 = 32'sd3329;  // Extended modulus for 32-bit operations
     localparam signed [15:0] QINV = 16'd62209;  // -q^{-1} mod 2^16
 
     // -----------------------------
     // Multiply: t = zeta * b
     // -----------------------------
-    wire signed [31:0] t;
-    assign t = zeta * b;
+    wire signed [31:0] t_32;
+    wire signed [15:0] t_16;
+
+    assign t_32 = zeta * b;
+    assign t_16 = t_32[15:0]; // Take lower 16 bits for reduction
+
 
     // -----------------------------
     // Montgomery Reduction
     // -----------------------------
-    wire signed [31:0] m_full;
-    wire signed [15:0] m;
-    wire signed [31:0] u;
+    wire signed [47:0] m_48;
+    wire signed [31:0] m_32;
+    wire signed [15:0] m_16;
+    wire signed [31:0] u_32;
+    wire signed [31:0] u_temp_32;
+    wire signed [15:0] u_16;
 
-    assign m_full = t * QINV;       // Compute t * QINV
-    assign m = m_full[15:0];       // Take lower 16 bits
-    assign u = (t - m * Q) >>> 16; // Divide by R (2^16)
+    assign m_32 = m_48[31:0]; // Take lower 16 bits for reduction
+    assign m_16 = m_32[15:0]; // Take lower 16 bits for reduction
+    assign u_temp_32 = (u_32 >>> 16); 
+    assign u_16 = u_temp_32[15:0]; // I do not have a good enough understanding about modulo arithmetic to get why we're doing this
 
-    wire signed [31:0] u_corr;
-    assign u_corr = (u >= Q_32) ? u - Q_32 : 
-                    (u < 0)     ? u + Q_32 : 
-                                  u;
+    assign m_48 = t_32 * QINV;       // Compute t * QINV
+    assign u_32 = (t_32 - m_16 * Q_16); // Divide by R (2^16)
 
-    wire signed [15:0] t_red;
-    assign t_red = u_corr[15:0];   // Reduced t
+    wire signed [15:0] u_reduced;
+
+    wire signed [15:0] t_reduced;
+    assign t_reduced = u_16;   
 
     // -----------------------------
     // Butterfly Computation
     // -----------------------------
-    wire signed [16:0] a_plus;
-    wire signed [16:0] a_minus;
+    wire signed [16:0] plus;
+    wire signed [16:0] minus;
 
-    assign a_plus  = a + t_red;
-    assign a_minus = a - t_red;
+    assign plus  = a + t_reduced;
+    assign minus = a - t_reduced;
 
     // -----------------------------
     // Modular Correction
@@ -56,13 +64,35 @@ module ntt_bfu (
         begin
             if (x >= Q_17) x = x - Q_17;
             if (x >= Q_17) x = x - Q_17; // Ensure double reduction
+            if (x >= Q_17) x = x - Q_17;
+            if (x >= Q_17) x = x - Q_17; // Ensure double reduction
+            if (x >= Q_17) x = x - Q_17;
+            if (x >= Q_17) x = x - Q_17; // Ensure double reduction
+            if (x >= Q_17) x = x - Q_17;
+            if (x >= Q_17) x = x - Q_17; // Ensure double reduction
+            if (x >= Q_17) x = x - Q_17;
+            if (x >= Q_17) x = x - Q_17; // Ensure double reduction
+            if (x >= Q_17) x = x - Q_17;
+            if (x >= Q_17) x = x - Q_17; // Ensure double reduction
+
             if (x < 0)  x = x + Q_17;
             if (x < 0)  x = x + Q_17; // Ensure double correction
+            if (x < 0)  x = x + Q_17;
+            if (x < 0)  x = x + Q_17; // Ensure double correction
+            if (x < 0)  x = x + Q_17;
+            if (x < 0)  x = x + Q_17; // Ensure double correction
+            if (x < 0)  x = x + Q_17;
+            if (x < 0)  x = x + Q_17; // Ensure double correction
+            if (x < 0)  x = x + Q_17;
+            if (x < 0)  x = x + Q_17; // Ensure double correction
+            if (x < 0)  x = x + Q_17;
+            if (x < 0)  x = x + Q_17; // Ensure double correction
+
             mod_q = x[15:0];
         end
     endfunction
 
-    assign a_out = mod_q(a_plus);
-    assign b_out = mod_q(a_minus);
+    assign a_out = mod_q(plus);
+    assign b_out = mod_q(minus);
 
 endmodule
