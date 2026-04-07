@@ -61,12 +61,12 @@ int main(int argc, char** argv) {
     int i;
     int j;
     int count = 5;
-    for (i = (-1) * ((1 << 15) - 1); i < ((1 << 15)); i++) {
-        for (j = (-1) * ((1 << 15) - 1); j < ((1 << 15)); j++) {
+    for (i = -1664; i <= 1664; i++) {
+        for (j = -1664; j <= 1664; j++) {
 
             top->a = i;
             top->b = j;
-            top->zeta = 1;
+            top->zeta = i;
 
             top->eval();
 

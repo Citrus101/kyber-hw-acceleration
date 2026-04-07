@@ -78,6 +78,12 @@ int main(int argc, char** argv) {
         tick(dut);
 
         printf("HW %d: %d\n", i, dut->ext_data_out);
+    }
+    for (int i = 0; i < 16; i++) {
+        dut->ext_addr = i;
+        dut->ext_we = 0;
+        tick(dut);
+
         printf("SW %d: %d\n", i, output[i]);
     }
 

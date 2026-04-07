@@ -164,14 +164,14 @@ SW_SRCS = \
     randombytes.c \
     $(TEST_DIR)/tb_ntt_full.cpp 
 
-HW_INCLUDES = -I. -I$(HW_NTT_DIR)
 
 $(OBJ_NTT)/V$(NTT_TOP)_: $(NTT_RTL_SRCS) $(SW_SRCS)
+	echo "nice"
 	$(VERILATOR) --cc $(NTT_RTL_SRCS) \
 		--exe $(SW_SRCS) \
 		--top-module $(NTT_TOP) \
 		--Mdir $(OBJ_NTT) \
-		-CFLAGS "$(HW_INCLUDES)" \
+		-CFLAGS "$(INCLUDES)" \
 		-LDFLAGS "-lm"
 	make -C $(OBJ_NTT) -f V$(NTT_TOP).mk
 

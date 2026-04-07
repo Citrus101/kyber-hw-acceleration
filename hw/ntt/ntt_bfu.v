@@ -64,27 +64,7 @@ module ntt_bfu (
         begin
             if (x >= Q_17) x = x - Q_17;
             if (x >= Q_17) x = x - Q_17; // Ensure double reduction
-            if (x >= Q_17) x = x - Q_17;
-            if (x >= Q_17) x = x - Q_17; // Ensure double reduction
-            if (x >= Q_17) x = x - Q_17;
-            if (x >= Q_17) x = x - Q_17; // Ensure double reduction
-            if (x >= Q_17) x = x - Q_17;
-            if (x >= Q_17) x = x - Q_17; // Ensure double reduction
-            if (x >= Q_17) x = x - Q_17;
-            if (x >= Q_17) x = x - Q_17; // Ensure double reduction
-            if (x >= Q_17) x = x - Q_17;
-            if (x >= Q_17) x = x - Q_17; // Ensure double reduction
 
-            if (x < 0)  x = x + Q_17;
-            if (x < 0)  x = x + Q_17; // Ensure double correction
-            if (x < 0)  x = x + Q_17;
-            if (x < 0)  x = x + Q_17; // Ensure double correction
-            if (x < 0)  x = x + Q_17;
-            if (x < 0)  x = x + Q_17; // Ensure double correction
-            if (x < 0)  x = x + Q_17;
-            if (x < 0)  x = x + Q_17; // Ensure double correction
-            if (x < 0)  x = x + Q_17;
-            if (x < 0)  x = x + Q_17; // Ensure double correction
             if (x < 0)  x = x + Q_17;
             if (x < 0)  x = x + Q_17; // Ensure double correction
 
