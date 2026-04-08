@@ -16,6 +16,7 @@ module ntt_controller (
     // Instrumentation outputs
     output reg [2:0] state_out,
     output reg [2:0] len_exp_out,
+    // output reg [7:0] len_out,
     output reg [7:0] start_idx_out,
     output reg [7:0] j_idx_out,
     output reg [6:0] k_out
@@ -33,12 +34,14 @@ module ntt_controller (
     reg [7:0] j_idx;
     reg [6:0] k_idx;
     
-    wire [7:0] len_val = 8'd128 >> len_exp;
+    wire [7:0] len_val = 8'd128 >> (7 - len_exp);
+
+    // assign len_out = len_val;  // For instrumentation
 
     always @(posedge clk or posedge rst) begin
         if (rst) begin
             state <= IDLE;
-            len_exp <= 3'd0;
+            len_exp <= 3'd7;
             start_idx <= 8'd0;
             j_idx <= 8'd0;
             k_idx <= 7'd1;
@@ -69,7 +72,7 @@ module ntt_controller (
                     done <= 1'b0;
                     if (start) begin
                         state <= COMPUTE;
-                        len_exp <= 3'd0;
+                        len_exp <= 3'd7;
                         start_idx <= 8'd0;
                         j_idx <= 8'd0;
                         k_idx <= 7'd1;
@@ -107,9 +110,9 @@ module ntt_controller (
                             start_idx <= start_idx + 2*len_val;
                             j_idx <= start_idx + 2*len_val;
                             state <= COMPUTE;
-                        end else if (len_exp < 3'd7) begin
+                        end else if (len_exp > 3'd1) begin
                             // Done with all starts for this len, move to next stage
-                            len_exp <= len_exp + 1;
+                            len_exp <= len_exp - 1;
                             start_idx <= 8'd0;
                             j_idx <= 8'd0;
                             state <= COMPUTE;

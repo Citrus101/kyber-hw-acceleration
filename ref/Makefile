@@ -117,16 +117,16 @@ SW_SRCS = \
     $(SW_DIR)/fips202.c \
     $(SW_DIR)/symmetric-shake.c \
     $(SW_DIR)/randombytes.c 
+	
 
 # Headers
-# INCLUDES = -I$(SW_DIR) -I$(HW_DIR)
 INCLUDES = -I. -I.. -I../../hw/ntt
 
 obj_dir/V$(TOP): $(RTL_SRCS) $(SOURCESKECCAK)
 	$(VERILATOR) --cc $(RTL_SRCS) \
-		--exe $(SOURCESKECCAK) test/tb_ntt_full.cpp randombytes.c \
+		--exe $(SOURCESKECCAK) test/tb_ntt_full.cpp randombytes.c ntt_hw.cpp \
 		--top-module $(TOP) \
-		-CFLAGS "$(INCLUDES) -DNTT_HW" \
+		-CFLAGS "$(INCLUDES) -DTT_HW" \
 		-LDFLAGS "-lm"
 
 ntt: obj_dir/V$(TOP)
@@ -145,6 +145,19 @@ bfu: obj_dir/Vntt_bfu
 	make -C ./obj_dir -f Vntt_bfu.mk
 
 bfu_run: bfu
+
+obj_dir/Vntt_controller: $(RTL_SRCS) $(SOURCESKECCAK)
+	$(VERILATOR) --cc $(RTL_SRCS) \
+		--exe $(SOURCESKECCAK) test/tb_ntt_controller.cpp randombytes.c \
+		--top-module ntt_controller \
+		-CFLAGS "$(INCLUDES)" \
+		-LDFLAGS "-lm"
+
+controller: obj_dir/Vntt_controller
+	make -C ./obj_dir -f Vntt_controller.mk
+
+controller_run: controller
+
 # ######################################################################
 # Dilithium hardware build (NTT)
 # ######################################################################

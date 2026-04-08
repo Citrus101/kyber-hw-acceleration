@@ -3,6 +3,21 @@
 #include "ntt.h"
 #include "reduce.h"
 
+#ifdef NTT_HW
+#ifdef __cplusplus
+extern "C" void ntt_hw(int16_t *a);
+#else
+extern void ntt_hw(int16_t *a);
+#endif
+#endif
+
+#ifdef INTT_HW
+#ifdef __cplusplus
+extern "C" void intt_hw(int32_t *a);
+#else
+extern void intt_hw(int32_t *a);
+#endif
+#endif
 /* Code to generate zetas and zetas_inv used in the number-theoretic transform:
 
 #define KYBER_ROOT_OF_UNITY 17
@@ -78,6 +93,10 @@ static int16_t fqmul(int16_t a, int16_t b) {
 * Arguments:   - int16_t r[256]: pointer to input/output vector of elements of Zq
 **************************************************/
 void ntt(int16_t r[256]) {
+
+#ifdef NTT_HW
+  ntt_hw(r);
+#else
   unsigned int len, start, j, k;
   int16_t t, zeta;
 
@@ -92,6 +111,7 @@ void ntt(int16_t r[256]) {
       }
     }
   }
+#endif
 }
 
 void bfu(int16_t a, int16_t b, int16_t zeta, int16_t *a_o, int16_t *b_o) {
