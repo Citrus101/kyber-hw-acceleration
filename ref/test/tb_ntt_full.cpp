@@ -66,6 +66,20 @@ int main(int argc, char** argv) {
     // -----------------------
     while (!dut->done && sim_time < 5000) {
         tick(dut);
+        printf("Cycle %llu | j=%d j+len=%d | write_addr=%d | we=%d wb=%d | data=%d\n",
+        sim_time,
+        dut->j_comb_out,
+        dut->j_plus_len_comb_out,
+        dut->write_addr_out,
+        dut->write_en_out,
+        dut->write_b_en_out,
+        dut->ext_data_out
+    );
+        printf("a=%d b=%d zeta=%d\n",
+    dut->ram_out_a_out,
+    dut->ram_out_b_out,
+    dut->zeta_data_out
+);
     }
 
     // -----------------------
